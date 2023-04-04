@@ -16,7 +16,8 @@ if [ "$SHELL" == "/usr/bin/chatgpt" ]; then
     if [ $? -eq 0 ]; then
         echo "设置成功"
     else
-        echo "设置失败，请检查密码是否正确，如果您后续想要设置chatgpt为默认Shell，请运行chsh -s /usr/bin/chatgpt命令"
+        echo "设置失败，请检查密码是否正确，为了防止系统出错，请先将Shell替换为ChatGPT以外的其他Shell，然后再进行卸载操作。"
+        exit 1
     fi
 fi
 

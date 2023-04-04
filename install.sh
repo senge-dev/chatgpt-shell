@@ -32,9 +32,11 @@ sudo cp chatgpt.py /usr/bin/chatgpt
 sudo chmod a+x /usr/bin/chatgpt
 # 复制配置文件
 sudo cp chatgpt.conf /etc/chatgpt.conf
-# 将chatgpt添加到/etc/shells文件中
-echo "/usr/bin/chatgpt" | sudo tee -a /etc/shells
-
+# 判断/etc/shell中是否已经存在 /usr/bin/chatgpt
+if [ $(grep -c "/usr/bin/chatgpt" /etc/shells) -eq 0 ]; then
+    # 如果不存在，则添加
+    echo "/usr/bin/chatgpt" | sudo tee -a /etc/shells
+fi
 
 # 安装完成，让用户选择是否将chatgpt设置为默认Shell
 echo "安装完成"

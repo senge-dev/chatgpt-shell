@@ -4,6 +4,7 @@ import sys
 import os
 import requests
 from configparser import ConfigParser as Ini
+import configparser
 import subprocess
 import distro
 import readline
@@ -11,12 +12,15 @@ import readline
 
 class ChatGPT:
 
-    def __init__(self, api_key, system_prompt="", url="https://chatgpt.example.com", max_tokens=100):
+    def __init__(self, api_key, system_prompt="", url="https://chatgpt.example.com", max_tokens=100, proxy_url=None, proxy_username=None, proxy_password=None):
         """初始化ChatGPT Shell
         :param api_key: API Key
         :param system_prompt: 系统提示
-        :param url: API URL，搭建教程详见：https://chatgpt-api.pro/index.php/api/chatgpt-flask-api.html
+        :param url: API URL，搭建教程详见：https://chatgpt-api.pro/index.php/api/chatgpt-flask-api.html，如果不想使用自己搭建的API，可以将URL设置为openai来使用OpenAI的API（可能需要配置代理）
         :param max_tokens: 每次回复的最大Token数
+        :param proxy_url: 代理URL，如果不想使用代理，可以将其设置为null
+        :param proxy_username: 代理用户名
+        :param proxy_password: 代理密码
         """
         self.api_key = api_key
         self.system_prompt = system_prompt
@@ -34,15 +38,36 @@ class ChatGPT:
             "role": "user",
             "content": message
         })
-        data = {
-            "api_key": self.api_key,
-            "system_content": self.system_prompt,
-            "user_content": message,
-            "continuous": self.messages,
-            "max_tokens": self.max_tokens,
-            "model": "gpt-3.5-turbo"
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + self.api_key
         }
-        result = requests.post(self.url, json=data)
+        if self.url == "openai" or self.url.startswith("https://api.openai.com") or self.url.startswith("https://openai.com"):
+            data = {
+                "messages": self.messages,
+                "max_tokens": self.max_tokens,
+                "model": "gpt-3.5-turbo"
+            }
+        else:
+            data = {
+                "api_key": self.api_key,
+                "system_content": self.system_prompt,
+                "user_content": message,
+                "continuous": self.messages,
+                "max_tokens": self.max_tokens,
+                "model": "gpt-3.5-turbo"
+            }
+        if self.proxy_url is not None:
+            proxies = {
+                "http": self.proxy_url,
+                "https": self.proxy_url
+            }
+            if self.proxy_username is not None and self.proxy_password is not None:
+                proxies["http"] = self.proxy_username + ":" + self.proxy_password + "@" + self.proxy_url
+                proxies["https"] = self.proxy_username + ":" + self.proxy_password + "@" + self.proxy_url
+            result = requests.post(self.url, json=data, headers=headers, proxies=proxies)
+        else:
+            result = requests.post(self.url, json=data, headers=headers)
         if result.status_code == 200:
             response = result.json()
             chatgpt_reply = response['current_response']
@@ -75,8 +100,17 @@ if __name__ == "__main__":
     system_prompt = conf.get("common", "SYSTEM_PROMPT").replace("${UserName}", os.getlogin()).replace("${Distro}", distro.name())
     url = conf.get("common", "API_URI")
     max_tokens = conf.getint("common", "MAX_TOKENS")
-    # 初始化ChatGPT Shell
-    chatgpt = ChatGPT(api_key, system_prompt, url, max_tokens)
+    try:
+        proxy_url = conf.get("proxy", "PROXY_URL")
+        proxy_username = conf.get("proxy", "PROXY_USERNAME")
+        proxy_password = conf.get("proxy", "PROXY_PASSWORD")
+    except (configparser.NoSectionError, configparser.NoOptionError):
+        # print("No Proxy")
+        chatgpt = ChatGPT(api_key, system_prompt, url, max_tokens)
+    else:
+        # 初始化ChatGPT Shell(设置代理)
+        # print("Proxy")
+        chatgpt = ChatGPT(api_key, system_prompt, url, max_tokens, proxy_url, proxy_username, proxy_password)
     distribution = distro.name()
     kernel_version = os.uname().release
     username = os.getlogin()
@@ -173,5 +207,4 @@ if __name__ == "__main__":
         except EOFError:
             print("程序已退出")
             sys.exit(0)
-
 
