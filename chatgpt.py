@@ -101,7 +101,8 @@ if __name__ == "__main__":
     conf = Ini()
     conf.read("/etc/chatgpt.conf")
     api_key = conf.get("common", "API_KEY")
-    system_prompt = conf.get("common", "SYSTEM_PROMPT").replace("${UserName}", os.getlogin()).replace("${Distro}", distro.name())
+    username = os.popen("whoami").read().strip()
+    system_prompt = conf.get("common", "SYSTEM_PROMPT").replace("${UserName}", username).replace("${Distro}", distro.name())
     url = conf.get("common", "API_URI")
     max_tokens = conf.getint("common", "MAX_TOKENS")
     try:
@@ -120,7 +121,6 @@ if __name__ == "__main__":
         chatgpt = ChatGPT(api_key, system_prompt, url, max_tokens, proxy_url, proxy_username, proxy_password)
     distribution = distro.name()
     kernel_version = os.uname().release
-    username = os.getlogin()
     hostname = os.uname().nodename
     print(f"""
  ██████╗██╗  ██╗ █████╗ ████████╗ ██████╗ ██████╗ ████████╗
