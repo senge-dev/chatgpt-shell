@@ -32,6 +32,9 @@ class ChatGPT:
                 "content": system_prompt
             }
         ]
+        self.proxy_url = proxy_url
+        self.proxy_username = proxy_username
+        self.proxy_password = proxy_password
 
     def send_message(self, message):
         self.messages.append({
@@ -57,6 +60,7 @@ class ChatGPT:
                 "max_tokens": self.max_tokens,
                 "model": "gpt-3.5-turbo"
             }
+        
         if self.proxy_url is not None:
             proxies = {
                 "http": self.proxy_url,
@@ -106,8 +110,11 @@ if __name__ == "__main__":
         proxy_password = conf.get("proxy", "PROXY_PASSWORD")
     except (configparser.NoSectionError, configparser.NoOptionError):
         # print("No Proxy")
-        chatgpt = ChatGPT(api_key, system_prompt, url, max_tokens)
-    else:
+        proxy_url = None
+        proxy_username = None
+        proxy_password = None
+        # chatgpt = ChatGPT(api_key, system_prompt, url, max_tokens)
+    finally:
         # 初始化ChatGPT Shell(设置代理)
         # print("Proxy")
         chatgpt = ChatGPT(api_key, system_prompt, url, max_tokens, proxy_url, proxy_username, proxy_password)
