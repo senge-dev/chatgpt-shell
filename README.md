@@ -10,6 +10,8 @@ ChatGPT Shell是一个支持ChatGPT的一个智能Linux Shell，支持ChatGPT对
 
 ChatGPT Shell支持使用OpenAI官方API，同时也支持自建API服务，这里提供了一个自建API服务的教程：[ChatGPT API](https://chatgpt-api.pro/index.php/api/chatgpt-flask-api.html)
 
+自建API服务使用的是我的另一个GitHub 仓库： https://github.com/senge-dev/docker-chatgpt 目前该服务可以在国内访问
+
 ### OpenAI官方API
 
 如果你不想自建API，也不想使用我搭建好的实例，你也可以使用OpenAI官方的API，但是可能需要配置代理服务器，如果你有代理服务器，请访问[OpenAI API](https://platform.openai.com/docs/guides/chat)
@@ -103,8 +105,9 @@ uname -r
 
 # 使用ChatGPT执行
 exec 查询当前系统的内核版本
-
 ```
+
+注意：不要使用自然语言来让ChatGPT执行有危险的命令（如删库跑路）
 
 - 查看源代码的错误
 
