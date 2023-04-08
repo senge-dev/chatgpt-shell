@@ -93,4 +93,23 @@ chat [message]
 search [command]
 ```
 
+- 执行命令
+
+```bash
+# 以查询当前系统的内核版本为例
+
+# 直接执行
+uname -r
+
+# 使用ChatGPT执行
+exec 查询当前系统的内核版本
+
+```
+
+- 查看源代码的错误
+
+```bash
+whatswrong [filename]
+```
+
 该参数会直接调用ChatGPT API来搜索命令，为了节省API额度，建议使用`man`命令来查询命令的使用方法。
