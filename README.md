@@ -8,8 +8,6 @@ ChatGPT Shell是一个支持ChatGPT的一个智能Linux Shell，支持ChatGPT对
 
 ChatGPT Shell在对话过程中，会自动获取系统当前的Linux发行版本和用户名。
 
-[hide-toggle name="GitHub"]https://github.com/senge-dev/chatgpt-shell[/hide-toggle]
-
 截图
 
 ![shell.png][1]
